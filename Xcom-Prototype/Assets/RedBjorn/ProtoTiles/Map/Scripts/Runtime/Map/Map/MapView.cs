@@ -28,9 +28,10 @@ namespace RedBjorn.ProtoTiles
 
         public void GridToggle()
         {
-            if (Grid)
+            if (true)
             {
-                Grid.SetActive(!Grid.activeSelf);
+                Grid.SetActive(true);
+                Debug.Log("Grid on");
             }
             else
             {

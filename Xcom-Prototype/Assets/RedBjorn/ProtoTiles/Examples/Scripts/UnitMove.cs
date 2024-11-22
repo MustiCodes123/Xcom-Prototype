@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace RedBjorn.ProtoTiles.Example
@@ -18,6 +19,9 @@ namespace RedBjorn.ProtoTiles.Example
         AreaOutline Area;
         PathDrawer Path;
         Coroutine MovingCoroutine;
+        bool tileShown = false;
+
+
 
         void Update()
         {
@@ -26,6 +30,7 @@ namespace RedBjorn.ProtoTiles.Example
                 HandleWorldClick();
             }
             PathUpdate();
+            //TileHide();
         }
 
         public void Init(MapEntity map)
@@ -34,6 +39,95 @@ namespace RedBjorn.ProtoTiles.Example
             Area = Spawner.Spawn(AreaPrefab, Vector3.zero, Quaternion.identity);
             AreaShow();
             PathCreate();
+        }
+
+        [SerializeField] public TileHighlighter gameObjectMapper; // Reference to GameObjectMapper
+        private Dictionary<GameObject, Color> originalColors = new Dictionary<GameObject, Color>();
+
+        /// <summary>
+        /// Show tiles and change their color to black, saving the original color.
+        /// </summary>
+        /// <param name="tiles">List of TileEntity objects.</param>
+        public void TileShow(List<TileEntity> tiles)
+        {
+            //if (tileShown) return;
+
+            //tileShown = true;
+
+            foreach (TileEntity tile in tiles)
+            {
+                Debug.Log($"Tile Position: {tile.Position}");
+
+                // Fetch the GameObject at the tile's position
+                GameObject targetObject = gameObjectMapper.GetGameObjectAtPosition(tile.Position);
+                if (targetObject != null)
+                {
+                    // Access the first child
+                    if (targetObject.transform.childCount > 0)
+                    {
+                        Transform firstChild = targetObject.transform.GetChild(0);
+
+                        // Get the MeshRenderer of the first child
+                        MeshRenderer renderer = firstChild.GetComponent<MeshRenderer>();
+                        if (renderer != null)
+                        {
+                            // Save the original color if not already saved
+                            if (!originalColors.ContainsKey(targetObject))
+                            {
+                                originalColors[targetObject] = renderer.material.color;
+                            }
+
+                            // Set the material color to black
+                            renderer.material.color = Color.black;
+                            Debug.Log($"Set color to black for: {targetObject.name}");
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"No MeshRenderer found on the first child of {targetObject.name}.");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"{targetObject.name} has no children.");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"No GameObject found at position: {tile.Position}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Hide tiles and restore their original color.
+        /// </summary>
+        private void TileHide()
+        {
+            //if (!tileShown) return;
+
+            //tileShown = false;
+
+            foreach (var entry in originalColors)
+            {
+                GameObject targetObject = entry.Key;
+                Color originalColor = entry.Value;
+
+                if (targetObject != null && targetObject.transform.childCount > 0)
+                {
+                    Transform firstChild = targetObject.transform.GetChild(0);
+                    MeshRenderer renderer = firstChild.GetComponent<MeshRenderer>();
+
+                    if (renderer != null)
+                    {
+                        // Restore the original color
+                        renderer.material.color = originalColor;
+                        Debug.Log($"Restored color for: {targetObject.name}");
+                    }
+                }
+            }
+
+            // Clear the saved colors after restoring
+            originalColors.Clear();
         }
 
         void HandleWorldClick()
@@ -45,6 +139,7 @@ namespace RedBjorn.ProtoTiles.Example
                 AreaHide();
                 Path.IsEnabled = false;
                 PathHide();
+                TileHide();
                 var path = Map.PathTiles(transform.position, clickPos, Range);
                 Move(path, () =>
                 {
@@ -140,8 +235,14 @@ namespace RedBjorn.ProtoTiles.Example
                 if (tile != null && tile.Vacant)
                 {
                     var path = Map.PathPoints(transform.position, Map.WorldPosition(tile.Position), Range);
+                    List<TileEntity> temp = Map.getTiles();
+                    
+                    
+                    
                     Path.Show(path, Map);
+                    TileShow(Map.getTiles());
                     Path.ActiveState();
+
                     //Area.ActiveState();
                 }
                 else

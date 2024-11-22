@@ -31,6 +31,8 @@ namespace RedBjorn.ProtoTiles
 
         MapEntity() { }
 
+        private List<TileEntity> TileEntities = new List<TileEntity>();
+
         public MapEntity(MapSettings settings, MapView view)
         {
             Settings = settings;
@@ -356,6 +358,21 @@ namespace RedBjorn.ProtoTiles
             return path;
         }
 
+        public List<TileEntity> getTiles()
+        {
+            return TileEntities;
+        }
+
+        /// <summary>
+        /// Deletes all tiles and returns the list of deleted tiles.
+        /// </summary>
+        /// <returns>A list of TileEntity objects that were deleted.</returns>
+        public void deleteTiles()
+        {
+           
+            TileEntities.Clear(); // Clear the original list
+        }
+
         /// <summary>
         /// Get path that consist of world space positions
         /// </summary>
@@ -365,34 +382,19 @@ namespace RedBjorn.ProtoTiles
         /// <returns></returns>
         public List<Vector3> PathPoints(Vector3 from, Vector3 to, float range)
         {
-            // Get the path nodes using the NodePathFinder
             var nodes = NodePathFinder.Path(this, Tile(from), Tile(to), range);
             var path = new List<Vector3>();
-
-            // Check if nodes were found
+            TileEntities.Clear(); // Clear the original list
             if (nodes != null)
             {
                 foreach (var n in nodes)
                 {
-                    // Add the tile's world position to the path
                     path.Add(WorldPosition(n.Position));
-
-                    // Highlight the tile
-                    var tile = Tile(WorldPosition(n.Position)); // Get the tile entity
-                    if (tile != null)
-                    {
-                        HighlightTile(tile, Color.green); // Example: highlight with green color
-                    }
+                    TileEntities.Add(Tile(n.Position));
                 }
             }
             return path;
         }
-
-        private void HighlightTile() { 
-        
-
-        }
-
 
         /// <summary>
         /// Get tile positions which cross the line between two world space postions
