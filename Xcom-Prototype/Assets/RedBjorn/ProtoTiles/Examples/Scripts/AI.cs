@@ -12,6 +12,7 @@ namespace RedBjorn.ProtoTiles.Example
     {
         public float Speed = 5;
         public float Range = 10f;
+        public float aiRange = 10f;
         public Transform RotationNode;
         public AreaOutline AreaPrefab;
         public PathDrawer PathPrefab;
@@ -177,13 +178,13 @@ namespace RedBjorn.ProtoTiles.Example
 
         IEnumerator Moving(List<TileEntity> path, Action onCompleted)
         {
-            int loop = 5;
+            int loop = (int)aiRange + 1;
             var nextIndex = 0;
             transform.position = Map.Settings.Projection(transform.position);
             TileEntity tile = Map.playerTile(player.transform.position);
             if (path[path.Count - 1].Position == tile.Position)
             {
-                loop = path.Count - 1;
+                loop = (int)Mathf.Min(path.Count - 1,loop);
             }
             while (nextIndex < loop)
             {
