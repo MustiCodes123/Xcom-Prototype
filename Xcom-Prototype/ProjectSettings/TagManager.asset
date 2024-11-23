@@ -5,6 +5,21 @@ TagManager:
   serializedVersion: 2
   tags:
   - Tile
+  - ScoreText
+  - TricksterHealthText
+  - PatternHealthText
+  - LoadingScore
+  - ParentPattern
+  - Diamond
+  - PatternHealthText1
+  - SettingsUI
+  - TricksterHealthBar
+  - juiceBar
+  - LoadingScreenStatsText
+  - PatternHealthBar1
+  - PatternHealthBar
+  - EnemyHealthBar
+  - PlayerHealthBar
   layers:
   - Default
   - TransparentFX

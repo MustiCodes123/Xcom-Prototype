@@ -1,4 +1,5 @@
-﻿using RedBjorn.Utils;
+﻿using Microlight.MicroBar;
+using RedBjorn.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,6 +19,12 @@ namespace RedBjorn.ProtoTiles.Example
         public PathDrawer PathPrefab;
         public GameObject player;
 
+        public static float EnemyHealth = 100;
+
+        [SerializeField] MicroBar Simple_MicroBar;
+        MicroBar leftMicroBar;
+
+
         MapEntity Map;
         AreaOutline Area;
         PathDrawer Path;
@@ -26,10 +33,19 @@ namespace RedBjorn.ProtoTiles.Example
         List<TileEntity> oldTiles = new List<TileEntity>();
 
         public bool aiTurn = false;
-        bool moving = false;
+        public bool moving = false;
         public int turns = 0;
 
+        private void Start()
+        {
+            leftMicroBar = GameObject.FindGameObjectWithTag("PlayerHealthBar").GetComponent<MicroBar>();
+            leftMicroBar.Initialize(100);
+            if (leftMicroBar == null)
+            {
 
+                Debug.Log("healthbar not found");
+            }
+        }
 
         void Update()
         {
@@ -184,7 +200,19 @@ namespace RedBjorn.ProtoTiles.Example
             TileEntity tile = Map.playerTile(player.transform.position);
             if (path[path.Count - 1].Position == tile.Position)
             {
-                loop = (int)Mathf.Min(path.Count - 1,loop);
+                loop = (int)Mathf.Min(path.Count - 1, loop);
+
+                if (turns == 1 && path.Count - 1 == 1) {
+                    EnemyAttack(10f);
+                    loop = 0;
+                    moving = false;
+                    if (turns == 0)
+                    {
+                        aiTurn = false;
+                        GamePlayScript.aiEnded = true;
+                    }
+                    yield return null;
+                }
             }
             while (nextIndex < loop)
             {
@@ -214,8 +242,17 @@ namespace RedBjorn.ProtoTiles.Example
             moving = false;
             if (turns == 0)
             {
+                aiTurn = false;
                 GamePlayScript.aiEnded = true;
             }
+        }
+
+        public void EnemyAttack(float damage)
+        {
+            UnitMove.PlayerHealth -= damage;
+            if (UnitMove.PlayerHealth < 0f) UnitMove.PlayerHealth = 0f;
+
+            if (leftMicroBar != null) leftMicroBar.UpdateBar(UnitMove.PlayerHealth, false, UpdateAnim.Damage);
         }
 
         void AreaShow()
