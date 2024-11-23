@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/RedBjorn/ProtoTiles/Examples/Levels/Square/ExampleSquareScene.unity
+    guid: 1739f073c792d1f4c9c32fb69964b396
   m_configObjects: {}

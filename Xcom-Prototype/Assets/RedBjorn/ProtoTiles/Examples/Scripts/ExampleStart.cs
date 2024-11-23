@@ -14,6 +14,8 @@ namespace RedBjorn.ProtoTiles.Example
 
         void Start()
         {
+            // Limit frame rate to match the monitor's refresh rate (e.g., 60Hz)
+            Application.targetFrameRate = 60;
             if (!MapView)
             {
 #if UNITY_2023_1_OR_NEWER
