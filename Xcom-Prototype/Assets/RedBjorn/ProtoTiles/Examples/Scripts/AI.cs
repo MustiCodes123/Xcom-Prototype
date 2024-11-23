@@ -24,8 +24,9 @@ namespace RedBjorn.ProtoTiles.Example
         bool tileShown = false;
         List<TileEntity> oldTiles = new List<TileEntity>();
 
-        bool aiTurn = false;
-        int turns = 0;
+        public bool aiTurn = false;
+        bool moving = false;
+        public int turns = 0;
 
 
 
@@ -38,8 +39,8 @@ namespace RedBjorn.ProtoTiles.Example
         {
             Map = map;
             //Area = Spawner.Spawn(AreaPrefab, Vector3.zero, Quaternion.identity);
-            //AreaShow();
-            //PathCreate();
+            AreaShow();
+            PathCreate();
         }
 
         [SerializeField] public TileHighlighter gameObjectMapper; // Reference to GameObjectMapper
@@ -139,20 +140,21 @@ namespace RedBjorn.ProtoTiles.Example
         {
             var clickPos = MyInput.GroundPosition(Map.Settings.Plane());
             var tile = Map.Tile(clickPos);
-            if (aiTurn && turns > 0)
+            
+            if (aiTurn && turns > 0 && !moving)
             {
                 //AreaHide();
                 Path.IsEnabled = false;
                 PathHide();
                 TileHide();
-                turns--;
+                
                 var path = Map.PathTiles(transform.position,player.transform.position, Range);
                 Move(path, () =>
                 {
                     Path.IsEnabled = true;
                     //AreaShow();
                 });
-                if(turns == 0)
+                
             }
         }
 
@@ -165,6 +167,7 @@ namespace RedBjorn.ProtoTiles.Example
                     StopCoroutine(MovingCoroutine);
                 }
                 MovingCoroutine = StartCoroutine(Moving(path, onCompleted));
+                moving = true;
             }
             else
             {
@@ -174,10 +177,15 @@ namespace RedBjorn.ProtoTiles.Example
 
         IEnumerator Moving(List<TileEntity> path, Action onCompleted)
         {
+            int loop = 5;
             var nextIndex = 0;
             transform.position = Map.Settings.Projection(transform.position);
-
-            while (nextIndex < 5)
+            TileEntity tile = Map.playerTile(player.transform.position);
+            if (path[path.Count - 1].Position == tile.Position)
+            {
+                loop = path.Count - 1;
+            }
+            while (nextIndex < loop)
             {
                 var targetPoint = Map.WorldPosition(path[nextIndex]);
                 var stepDir = (targetPoint - transform.position) * Speed;
@@ -201,6 +209,12 @@ namespace RedBjorn.ProtoTiles.Example
                 nextIndex++;
             }
             onCompleted.SafeInvoke();
+            turns--;
+            moving = false;
+            if (turns == 0)
+            {
+                GamePlayScript.aiEnded = true;
+            }
         }
 
         void AreaShow()

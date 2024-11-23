@@ -23,10 +23,16 @@ namespace RedBjorn.ProtoTiles.Example
         bool tileShown = false;
         List<TileEntity> oldTiles = new List<TileEntity>();
 
+        public bool playerTurn = false;
+        public int turns = 0;
 
 
         void Update()
         {
+            if(!playerTurn)
+            {
+                return;
+            }
             if (MyInput.GetOnWorldUp(Map.Settings.Plane()))
             {
                 HandleWorldClick();
@@ -152,6 +158,7 @@ namespace RedBjorn.ProtoTiles.Example
                     Path.IsEnabled = true;
                     AreaShow();
                 });
+                
             }
         }
 
@@ -200,6 +207,13 @@ namespace RedBjorn.ProtoTiles.Example
                 nextIndex++;
             }
             onCompleted.SafeInvoke();
+            turns--;
+            //Debug.Log("Player turn:")
+            if (turns == 0)
+            {
+                GamePlayScript.playerEnded = true;
+
+            }
         }
 
         void AreaShow()

@@ -358,6 +358,11 @@ namespace RedBjorn.ProtoTiles
             return path;
         }
 
+        public TileEntity playerTile(Vector3 v)
+        {
+            return Tile(v);
+        }
+
         public List<TileEntity> getTiles()
         {
             return TileEntities;

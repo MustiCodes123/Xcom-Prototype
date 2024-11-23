@@ -8,7 +8,7 @@ namespace RedBjorn.ProtoTiles.Example
         public KeyCode GridToggle = KeyCode.G;
         public MapView MapView;
         public UnitMove Unit;
-        public UnitMove EnemyUnit;
+        public AI EnemyUnit;
         public GamePlayScript gamePlayScript;
         public MapEntity MapEntity { get; private set; }
 
@@ -36,10 +36,10 @@ namespace RedBjorn.ProtoTiles.Example
             {
 #if UNITY_2023_1_OR_NEWER
                 Unit = FindFirstObjectByType<UnitMove>();
-                EnemyUnit = FindFirstObjectByType<UnitMove>();
+                EnemyUnit = FindFirstObjectByType<AI>();
 #else
                 Unit = FindObjectOfType<UnitMove>();
-                EnemyUnit = FindObjectOfType<UnitMove>();
+                EnemyUnit = FindObjectOfType<AI>();
 #endif
             }
             if (Unit && EnemyUnit)

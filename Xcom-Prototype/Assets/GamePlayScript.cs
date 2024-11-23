@@ -9,43 +9,52 @@ public class GamePlayScript : MonoBehaviour
     [SerializeField] private GameObject Player;
     [SerializeField] private GameObject Enemy;
     public ExampleStart estart;
-
-    public int currentTurn;
+    public static bool playerEnded = false;
+    public static bool aiEnded = true;
+    
 
     void Start()
     {
-        currentTurn = 0;
-        UpdateTurn();
+        playerEnded = false;
+        aiEnded = true;
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (playerEnded)
         {
-            EndTurn();
+            Enemy.GetComponent<AI>().aiTurn = true;
+            Enemy.GetComponent<AI>().turns = 2;
+            playerEnded = false;
         }
-    }
-
-    private void EndTurn()
-    {
-        currentTurn = (currentTurn + 1) % 2; 
-        UpdateTurn();
-    }
-
-
-    private void UpdateTurn()
-    {
-        if (currentTurn == 0)
+        if(aiEnded)
         {
-            Player.GetComponent<UnitMove>().enabled = true;
-            Enemy.GetComponent<UnitMove>().enabled = false;
+            Player.GetComponent<UnitMove>().playerTurn = true;
+            Player.GetComponent<UnitMove>().turns = 2;
+            aiEnded = false;
         }
-        else
-        { 
-            Player.GetComponent<UnitMove>().enabled = false; 
-            Enemy.GetComponent<UnitMove>().enabled = true; 
-        }
-
-        Debug.Log(currentTurn == 0 ? "Player's Turn" : "Enemy's Turn");
     }
+
+    //private void EndTurn()
+    //{
+    //    currentTurn = (currentTurn + 1) % 2; 
+    //    UpdateTurn();
+    //}
+
+
+    //private void UpdateTurn()
+    //{
+    //    if (currentTurn == 0)
+    //    {
+    //        Player.GetComponent<UnitMove>().enabled = true;
+    //        Enemy.GetComponent<UnitMove>().enabled = false;
+    //    }
+    //    else
+    //    { 
+    //        Player.GetComponent<UnitMove>().enabled = false; 
+    //        Enemy.GetComponent<UnitMove>().enabled = true; 
+    //    }
+
+    //    Debug.Log(currentTurn == 0 ? "Player's Turn" : "Enemy's Turn");
+    //}
 }
