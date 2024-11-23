@@ -8,7 +8,8 @@ namespace RedBjorn.ProtoTiles.Example
         public KeyCode GridToggle = KeyCode.G;
         public MapView MapView;
         public UnitMove Unit;
-
+        public UnitMove EnemyUnit;
+        public GamePlayScript gamePlayScript;
         public MapEntity MapEntity { get; private set; }
 
         void Start()
@@ -31,17 +32,20 @@ namespace RedBjorn.ProtoTiles.Example
                 Log.E("Can't find MapView. Random errors can occur");
             }
 
-            if (!Unit)
+            if (!Unit && !EnemyUnit)
             {
 #if UNITY_2023_1_OR_NEWER
                 Unit = FindFirstObjectByType<UnitMove>();
+                EnemyUnit = FindFirstObjectByType<UnitMove>();
 #else
                 Unit = FindObjectOfType<UnitMove>();
+                EnemyUnit = FindObjectOfType<UnitMove>();
 #endif
             }
-            if (Unit)
+            if (Unit && EnemyUnit)
             {
                 Unit.Init(MapEntity);
+                EnemyUnit.Init(MapEntity);
             }
             else
             {
@@ -56,5 +60,7 @@ namespace RedBjorn.ProtoTiles.Example
                 MapEntity.GridToggle();
             }
         }
+
     }
+
 }

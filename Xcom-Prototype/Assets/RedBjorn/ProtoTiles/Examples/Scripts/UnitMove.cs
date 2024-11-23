@@ -62,7 +62,7 @@ namespace RedBjorn.ProtoTiles.Example
 
             foreach (TileEntity tile in tiles)
             {
-                Debug.Log($"Tile Position: {tile.Position}");
+                //Debug.Log($"Tile Position: {tile.Position}");
 
                 // Fetch the GameObject at the tile's position
                 GameObject targetObject = gameObjectMapper.GetGameObjectAtPosition(tile.Position);
@@ -85,7 +85,7 @@ namespace RedBjorn.ProtoTiles.Example
 
                             // Set the material color to black
                             renderer.material.color = Color.black;
-                            Debug.Log($"Set color to black for: {targetObject.name}");
+                            //Debug.Log($"Set color to black for: {targetObject.name}");
                         }
                         else
                         {
@@ -127,7 +127,7 @@ namespace RedBjorn.ProtoTiles.Example
                     {
                         // Restore the original color
                         renderer.material.color = originalColor;
-                        Debug.Log($"Restored color for: {targetObject.name}");
+                        //Debug.Log($"Restored color for: {targetObject.name}");
                     }
                 }
             }
