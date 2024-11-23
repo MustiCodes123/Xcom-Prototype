@@ -31,6 +31,7 @@ namespace RedBjorn.ProtoTiles.Example
 
         [SerializeField] MicroBar Simple_MicroBar;
         MicroBar leftMicroBar;
+        public bool attacked = false;
 
 
         private void Start()
@@ -162,18 +163,27 @@ namespace RedBjorn.ProtoTiles.Example
         {
             var clickPos = MyInput.GroundPosition(Map.Settings.Plane());
             var tile = Map.Tile(clickPos);
-            if (tile != null && tile.Vacant)
+            TileEntity aiTile = Map.playerTile(Enemy.transform.position);
+
+            var path = Map.PathTiles(transform.position, clickPos, Range);
+
+            // Ensure the AI tile is not in the middle of the path
+            bool aiTileInMiddle = path.Take(path.Count - 1).Any(p => p.Position == aiTile.Position);
+
+            if (tile != null && tile.Vacant && ((attacked && (aiTile.Position != tile.Position)) || !attacked) && !aiTileInMiddle)
             {
                 //AreaHide();
                 Path.IsEnabled = false;
                 PathHide();
                 TileHide();
-                var path = Map.PathTiles(transform.position, clickPos, Range);
+                //var path = Map.PathTiles(transform.position, clickPos, Range);
                 Move(path, () =>
                 {
                     Path.IsEnabled = true;
                     AreaShow();
                 });
+                
+               
                 
             }
         }
@@ -213,9 +223,11 @@ namespace RedBjorn.ProtoTiles.Example
 
                 var clickPos = MyInput.GroundPosition(Map.Settings.Plane());
                 var tile2 = Map.Tile(clickPos);
-                if (tile2.Position == tile.Position && path.Count - 1 == 1) {
+                if (tile2.Position == tile.Position && path.Count - 1 == 1 && !attacked) {
 
+                    
                     PlayerAttack(10f);
+                    attacked = true;
                     loop = 0;
                 }
               
@@ -252,6 +264,7 @@ namespace RedBjorn.ProtoTiles.Example
             if (turns == 0)
             {
                 playerTurn = false;
+                attacked = false;
                 GamePlayScript.playerEnded = true;
 
             }

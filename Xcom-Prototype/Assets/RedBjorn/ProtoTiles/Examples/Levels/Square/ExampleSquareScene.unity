@@ -3269,7 +3269,7 @@ PrefabInstance:
       objectReference: {fileID: 1175231887}
     - target: {fileID: 662182742872618790, guid: e847baf8c564fba488a2980f4e937c09, type: 3}
       propertyPath: Range
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 662182742872618790, guid: e847baf8c564fba488a2980f4e937c09, type: 3}
       propertyPath: Simple_MicroBar
@@ -3860,12 +3860,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Speed: 5
   Range: 100
-  aiRange: 3
+  aiRange: 5
   RotationNode: {fileID: 934064541}
   AreaPrefab: {fileID: 114964435729023602, guid: fe2319e9d6e840f409af77b3e7a85259, type: 3}
   PathPrefab: {fileID: 114413117004689456, guid: 4eac60a74696c8142b18f93d4453e87d, type: 3}
   player: {fileID: 1815216834}
   Simple_MicroBar: {fileID: 2097413757}
+  beenAttacked: 0
   aiTurn: 0
   moving: 0
   turns: 0

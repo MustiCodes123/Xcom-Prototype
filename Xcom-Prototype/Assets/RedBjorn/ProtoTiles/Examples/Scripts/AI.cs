@@ -24,7 +24,7 @@ namespace RedBjorn.ProtoTiles.Example
         [SerializeField] MicroBar Simple_MicroBar;
         MicroBar leftMicroBar;
 
-
+        public bool beenAttacked = false;
         MapEntity Map;
         AreaOutline Area;
         PathDrawer Path;
@@ -35,9 +35,13 @@ namespace RedBjorn.ProtoTiles.Example
         public bool aiTurn = false;
         public bool moving = false;
         public int turns = 0;
+        UnitMove playerScript;
+
 
         private void Start()
         {
+            playerScript = player.GetComponent<UnitMove>();
+
             leftMicroBar = GameObject.FindGameObjectWithTag("PlayerHealthBar").GetComponent<MicroBar>();
             leftMicroBar.Initialize(100);
             if (leftMicroBar == null)
@@ -50,7 +54,60 @@ namespace RedBjorn.ProtoTiles.Example
         void Update()
         {
             moveToUser();
+
+            // Get the path from the enemy to the player
+            var path = Map.PathTiles(transform.position, player.transform.position, Range);
+           
+            if (path.Count == 2 && !aiTurn && !playerScript.attacked )
+            {
+                Debug.Log("set red");
+                // Get the tile where the enemy is located
+                TileEntity enemyTile = Map.playerTile(transform.position);
+
+                // Fetch the GameObject at the enemy tile's position
+                GameObject targetObject = gameObjectMapper.GetGameObjectAtPosition(enemyTile.Position);
+                if (targetObject != null && targetObject.transform.childCount > 0)
+                {
+                    Transform firstChild = targetObject.transform.GetChild(0);
+                    MeshRenderer renderer = firstChild.GetComponent<MeshRenderer>();
+
+                    if (renderer != null)
+                    {
+                        // Save the original color if not already saved
+                        if (!originalColors.ContainsKey(targetObject))
+                        {
+                            originalColors[targetObject] = renderer.material.color;
+                        }
+
+                        // Set the material color to red
+                        renderer.material.color = Color.red;
+                    }
+                }
+            }
+            else
+            {
+                // Revert the enemy tile to its original color
+                foreach (var entry in originalColors)
+                {
+                    GameObject targetObject = entry.Key;
+                    Color originalColor = entry.Value;
+
+                    if (targetObject != null && targetObject.transform.childCount > 0)
+                    {
+                        Transform firstChild = targetObject.transform.GetChild(0);
+                        MeshRenderer renderer = firstChild.GetComponent<MeshRenderer>();
+
+                        if (renderer != null)
+                        {
+                            // Restore the original color
+                            renderer.material.color = originalColor;
+                        }
+                    }
+                }
+               
+            }
         }
+
 
         public void Init(MapEntity map)
         {
@@ -171,7 +228,8 @@ namespace RedBjorn.ProtoTiles.Example
                     Path.IsEnabled = true;
                     //AreaShow();
                 });
-                
+                turns--;
+
             }
         }
 
@@ -184,7 +242,7 @@ namespace RedBjorn.ProtoTiles.Example
                     StopCoroutine(MovingCoroutine);
                 }
                 MovingCoroutine = StartCoroutine(Moving(path, onCompleted));
-                moving = true;
+                //moving = true;
             }
             else
             {
@@ -194,6 +252,7 @@ namespace RedBjorn.ProtoTiles.Example
 
         IEnumerator Moving(List<TileEntity> path, Action onCompleted)
         {
+            moving = true;
             int loop = (int)aiRange + 1;
             var nextIndex = 0;
             transform.position = Map.Settings.Projection(transform.position);
@@ -238,11 +297,12 @@ namespace RedBjorn.ProtoTiles.Example
                 nextIndex++;
             }
             onCompleted.SafeInvoke();
-            turns--;
+            //turns--;
             moving = false;
             if (turns == 0)
             {
                 aiTurn = false;
+                beenAttacked = false;
                 GamePlayScript.aiEnded = true;
             }
         }
