@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -20,6 +21,7 @@ namespace RedBjorn.ProtoTiles.Example
         PathDrawer Path;
         Coroutine MovingCoroutine;
         bool tileShown = false;
+        List<TileEntity> oldTiles = new List<TileEntity>();
 
 
 
@@ -36,7 +38,7 @@ namespace RedBjorn.ProtoTiles.Example
         public void Init(MapEntity map)
         {
             Map = map;
-            Area = Spawner.Spawn(AreaPrefab, Vector3.zero, Quaternion.identity);
+            //Area = Spawner.Spawn(AreaPrefab, Vector3.zero, Quaternion.identity);
             AreaShow();
             PathCreate();
         }
@@ -52,7 +54,11 @@ namespace RedBjorn.ProtoTiles.Example
         {
             //if (tileShown) return;
 
-            //tileShown = true;
+            if (!oldTiles.SequenceEqual(tiles)) // Compare contents of the lists
+            {
+                oldTiles = new List<TileEntity>(tiles); // Create a copy of the new tiles list
+                TileHide();
+            }
 
             foreach (TileEntity tile in tiles)
             {
@@ -136,7 +142,7 @@ namespace RedBjorn.ProtoTiles.Example
             var tile = Map.Tile(clickPos);
             if (tile != null && tile.Vacant)
             {
-                AreaHide();
+                //AreaHide();
                 Path.IsEnabled = false;
                 PathHide();
                 TileHide();
