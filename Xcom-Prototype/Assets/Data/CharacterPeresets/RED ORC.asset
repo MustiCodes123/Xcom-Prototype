@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73f1c3fa50ffb18458020c8ba53500b7, type: 3}
+  m_Name: RED ORC
+  m_EditorClassIdentifier: 
+  CharacterID: 7
+  CharacterSprite: {fileID: 21300000, guid: f62fe3fe21d3387438e59a284ce1b51e, type: 3}
+  Rare: 4
+  Race: 2
+  CharacterBehaviourEnum: 0
+  PresetName: RED ORC
+  BackGroundPath: BarbarianBG
+  Talents: 
+  Parameters:
+    Health: 28600
+    Mana: 6120
+    MoveSpeed: 2.4
+    LiftingCapacity: 213.2
+    Attack: 113
+    AdditionalAttackSpeed: 0
+    CriticalDamage: 1.7
+    CriticalChance: 0.13
+    MagicCriticalDamage: 1.7
+    MagicCriticalChance: 0.13
+    Magic: 113
+    MagicDefense: 0
+    BlockChance: 0
+    DodgeAdditional: 0.026
+    MagicalResistance: 6.6
+    PhysicalResistance: 7.8
+  LevelUpParameters:
+    XpToNextLevel: 1400
+    HealthLevelUpIncrease: 0
+    ManaLevelUpIncrease: 0
+    AttackLevelUpIncrease: 0
+    MagicLevelUpIncrease: 0
+    LiftingCapacityLevelUpIncrease: 0
+    PhysicalResistanceLevelUpIncrease: -0.02
+    MagicalResistanceLevelUpIncrease: -0.015
+    CriticalPhysicalDamageLevelUpIncrease: 0
+    CriticalMagicalDamageLevelUpIncrease: 0
+    DodgeAdditionalLevelUpIncrease: -0.01
+    MoveSpeedLevelUpIncrease: 0
+  RareLevelUpModel: {fileID: 11400000, guid: 966ea6fddda436f40ba575fd21047deb, type: 2}
+  Stats:
+  - Param: 0
+    Value: 5
+  - Param: 1
+    Value: 4
+  - Param: 2
+    Value: 2
+  Stars: 5
+  ItemsOffsetData: []

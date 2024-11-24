@@ -1,0 +1,20 @@
+﻿public enum BuffsEnum 
+{
+    BurnBuff,
+    ColdDebuff,
+    ElectricDebuff,
+    FrostBuff,
+    GiantBuff,
+    StoneSkinBuff,
+    StunBuff,
+    ArmorDebuff,
+    HunterDebuff,
+    MovementAndArmorDebuff,
+    SlowDebuff,
+    FireArmor,
+    IceArmor,
+    DecreaseIncomingHitChance,
+    SpeedBuff,
+    DefenderBuff,
+    AttackSpeedBuster
+}
