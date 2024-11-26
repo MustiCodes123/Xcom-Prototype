@@ -18,6 +18,7 @@ namespace RedBjorn.ProtoTiles.Example
         public AreaOutline AreaPrefab;
         public PathDrawer PathPrefab;
         public static float PlayerHealth = 100;
+        public Animator _animator;
         MapEntity Map;
         AreaOutline Area;
         PathDrawer Path;
@@ -25,6 +26,7 @@ namespace RedBjorn.ProtoTiles.Example
         bool tileShown = false;
         List<TileEntity> oldTiles = new List<TileEntity>();
         public GameObject Enemy;
+        public AI _enemyScript;
 
         public bool playerTurn = false;
         public int turns = 0;
@@ -32,17 +34,17 @@ namespace RedBjorn.ProtoTiles.Example
         [SerializeField] MicroBar Simple_MicroBar;
         MicroBar leftMicroBar;
         public bool attacked = false;
+        
 
 
         private void Start()
-        {
+        {            
             leftMicroBar = GameObject.FindGameObjectWithTag("EnemyHealthBar").GetComponent<MicroBar>();
             leftMicroBar.Initialize(100);
             if (leftMicroBar == null) {
 
                 Debug.Log("healthbar not found");
             }
-
         }
         void Update()
         {
@@ -225,7 +227,16 @@ namespace RedBjorn.ProtoTiles.Example
                 var tile2 = Map.Tile(clickPos);
                 if (tile2.Position == tile.Position && path.Count - 1 == 1 && !attacked) {
 
-                    
+                    var targetPoint = Map.WorldPosition(tile);
+                    var stepDir = (targetPoint - transform.position) * Speed;
+                    if (Map.RotationType == RotationType.LookAt)
+                    {
+                        RotationNode.rotation = Quaternion.LookRotation(stepDir, Vector3.up);
+                    }
+                    else if (Map.RotationType == RotationType.Flip)
+                    {
+                        RotationNode.rotation = Map.Settings.Flip(stepDir);
+                    }
                     PlayerAttack(10f);
                     attacked = true;
                     loop = 0;
@@ -237,6 +248,7 @@ namespace RedBjorn.ProtoTiles.Example
 
             while (nextIndex < loop)
             {
+                _animator.SetFloat("Walk", 1f);
                 var targetPoint = Map.WorldPosition(path[nextIndex]);
                 var stepDir = (targetPoint - transform.position) * Speed;
                 if (Map.RotationType == RotationType.LookAt)
@@ -257,6 +269,7 @@ namespace RedBjorn.ProtoTiles.Example
                 }
                 transform.position = targetPoint;
                 nextIndex++;
+                _animator.SetFloat("Walk", 0f);
             }
             onCompleted.SafeInvoke();
             turns--;
@@ -272,20 +285,27 @@ namespace RedBjorn.ProtoTiles.Example
 
         public void PlayerAttack(float damage)
         {
+            _animator.SetTrigger("Attack");
             float damageAmount = damage;
             AI.EnemyHealth -= damageAmount;
             if (AI.EnemyHealth < 0f) AI.EnemyHealth = 0f;
 
             if (leftMicroBar != null) leftMicroBar.UpdateBar(AI.EnemyHealth, false, UpdateAnim.Damage);
-        }
-        //public void PlayerHeal(float healAmount)
-        //{
-        //    PlayerHealth += healAmount;
-        //    if (PlayerHealth > 1) PlayerHealth = 1;
 
-        //    // Update HealthBar
-        //    if (leftMicroBar != null) leftMicroBar.UpdateBar(PlayerHealth, false, UpdateAnim.Heal);
-        //}
+            if (AI.EnemyHealth <= 0) {
+
+                _enemyScript.PlayEnemyDeathAnimation();
+            }
+        }
+
+        public void PlayPlayerDeathAnimation() { 
+        
+            if (_animator != null)
+            {
+                _animator.SetTrigger("Die");
+            }
+        }
+
         void AreaShow()
         {
             return;

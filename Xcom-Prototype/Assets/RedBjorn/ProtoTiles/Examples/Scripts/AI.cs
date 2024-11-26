@@ -18,6 +18,8 @@ namespace RedBjorn.ProtoTiles.Example
         public AreaOutline AreaPrefab;
         public PathDrawer PathPrefab;
         public GameObject player;
+        public Animator _animator;
+        public UnitMove _unitMoveScript;
 
         public static float EnemyHealth = 100;
 
@@ -262,6 +264,16 @@ namespace RedBjorn.ProtoTiles.Example
                 loop = (int)Mathf.Min(path.Count - 1, loop);
 
                 if (turns == 1 && path.Count - 1 == 1) {
+                    var targetPoint = Map.WorldPosition(tile);
+                    var stepDir = (targetPoint - transform.position) * Speed;
+                    if (Map.RotationType == RotationType.LookAt)
+                    {
+                        RotationNode.rotation = Quaternion.LookRotation(stepDir, Vector3.up);
+                    }
+                    else if (Map.RotationType == RotationType.Flip)
+                    {
+                        RotationNode.rotation = Map.Settings.Flip(stepDir);
+                    }
                     EnemyAttack(10f);
                     loop = 0;
                     moving = false;
@@ -275,6 +287,7 @@ namespace RedBjorn.ProtoTiles.Example
             }
             while (nextIndex < loop)
             {
+                _animator.SetFloat("Walk", 1f);
                 var targetPoint = Map.WorldPosition(path[nextIndex]);
                 var stepDir = (targetPoint - transform.position) * Speed;
                 if (Map.RotationType == RotationType.LookAt)
@@ -295,6 +308,7 @@ namespace RedBjorn.ProtoTiles.Example
                 }
                 transform.position = targetPoint;
                 nextIndex++;
+                _animator.SetFloat("Walk", 0f);
             }
             onCompleted.SafeInvoke();
             //turns--;
@@ -309,10 +323,25 @@ namespace RedBjorn.ProtoTiles.Example
 
         public void EnemyAttack(float damage)
         {
+            _animator.SetTrigger("Attack");
             UnitMove.PlayerHealth -= damage;
             if (UnitMove.PlayerHealth < 0f) UnitMove.PlayerHealth = 0f;
 
             if (leftMicroBar != null) leftMicroBar.UpdateBar(UnitMove.PlayerHealth, false, UpdateAnim.Damage);
+
+            if (UnitMove.PlayerHealth <= 0)
+            {
+                _unitMoveScript.PlayPlayerDeathAnimation();
+            }
+        }
+
+        public void PlayEnemyDeathAnimation()
+        {
+
+            if (_animator != null)
+            {
+                _animator.SetTrigger("Die");
+            }
         }
 
         void AreaShow()
